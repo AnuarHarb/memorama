@@ -1,0 +1,118 @@
+<template id="card-template">
+  <style>
+    .card {
+      background-color: #1a8fad;
+      border-radius: 8px;
+      color: white;
+      cursor: pointer;
+      padding: 40px;
+      font-family: arial;
+      width: 300px;
+      height: 150px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .front,
+    .back {
+      display: none;
+    }
+
+    .back {
+      width: 100%;
+      height: 100%;
+    }
+
+    .active {
+      display: block;
+    }
+
+
+    .card.rotating {
+      animation: flip 2s;
+      pointer-events: none;
+    }
+
+    @keyframes flip {
+      0% { transform:rotateY(0deg); }
+      50% { transform:rotateY(90deg); }
+      100% { transform:rotateY(0deg); }
+    }
+  </style>
+  <article class="card">
+    <div class="front active">
+      <slot name="name">Anuar Harb</slot>
+      <slot name="job"></slot>
+    </div>
+    <div class="back">
+      <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ullam consectetur neque accusantium, dolore, dolor tempora autem tempore facere consequatur sint quaerat suscipit, vero libero quos ex aut eos voluptatum. Quasi.</p>
+    </div>
+  </article>
+</template>
+
+<script>
+  (function(customElements) {
+    'use strict';
+
+    class CardComponent extends HTMLElement {
+      static get observedAttributes() {
+        return ['color', 'value'];
+      }
+
+      constructor() {
+        super();
+        this._initShadowDOM();
+        this._templateToShadowDOM();
+        this._card = this.shadowRoot.querySelector('.card');
+        this._front = this.shadowRoot.querySelector('.front');
+        this._back = this.shadowRoot.querySelector('.back');
+      }
+
+      connectedCallback() {
+        this._card.addEventListener('click', this.flipCard.bind(this));
+      }
+
+      _initShadowDOM() {
+        this.attachShadow({mode: 'open'});
+      }
+
+      _templateToShadowDOM() {
+        const template = document.currentScript.ownerDocument.querySelector('#card-template').content;
+        this.shadowRoot.appendChild(document.importNode(template, true));
+      }
+
+      attributeChangedCallback(name, oldValue, newValue) {
+        name === 'color' ? this.changeColor(newValue) : null
+        name === 'value' ? this._value = newValue : null
+      }
+
+      changeColor(newValue) {
+        this._back.style.backgroundColor = newValue;
+      }
+
+      flipCard() {
+        this._card.classList.add('rotating');
+        setTimeout(()=> {
+          this._front.classList.toggle('active');
+          this._back.classList.toggle('active');
+        }, 1000);
+        setTimeout(()=> {
+          this._card.classList.remove('rotating');
+        }, 2000);
+
+        const event = new CustomEvent('card-clicked', {
+          bubbles: true,
+          composed: true,
+          detail: {
+              value: this._value
+          }
+        });
+        this.dispatchEvent(event);
+      }
+    }
+
+    customElements.define('card-component', CardComponent);
+  })(window.customElements);
+
+</script>

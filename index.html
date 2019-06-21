@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Memorama</title>
+  <link rel="import" href="src/card-component.html">
+</head>
+<body>
+
+  <card-component color="purple" value="toy">
+    <h2 slot="name">Toy</h2>
+    <p slot="job">Constructor de Puentes</p>
+  </card-component>
+
+  <card-component color="#000" value="toy">
+    <h2 slot="name">Toy</h2>
+    <p slot="job">Cazador de Gusanos</p>
+  </card-component>
+
+  <card-component color="#000" value="car">
+    <h2 slot="name">Car</h2>
+    <p slot="job">Cazador de Gusanos</p>
+  </card-component>
+
+  <script>
+    let activeCard;
+    document.addEventListener('card-clicked', ()=> {
+      console.log(event)
+      if(activeCard === event.detail.value) {
+        console.log('le atrinaste');
+      } else {
+        activeCard = event.detail.value;
+        console.log('no eran pares');
+      }
+    })
+  </script>
+
+</body>
+</html>
